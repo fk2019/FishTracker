@@ -9,6 +9,7 @@ const dummyPonds = [
     size: 120,
     stockingDate: '2025-03-10',
     fishCount: 1200,
+    species: 'Catfish',
     status: 'active',
   },
   {
@@ -16,6 +17,7 @@ const dummyPonds = [
     size: 95,
     stockingDate: '2025-02-21',
     fishCount: 950,
+    species: 'trout',
     status: 'inactive',
   },
 ];

@@ -44,7 +44,7 @@ export default function ReportsPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Reports & Insights</h1>
+      <h1 className="text-xl font-bold mb-4 text-blue-900">Reports & Insights</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <StatCard title="Total Feedings" value={stats.totalFeedings} />

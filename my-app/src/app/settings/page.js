@@ -25,9 +25,9 @@ export default function SettingsPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Settings</h1>
+      <h1 className="text-2xl font-bold mb-4 text-blue-900">Settings</h1>
 
-      <div className="space-y-4">
+      <div className="space-y-4 text-gray-500">
         <Input label="Farmer Name" name="farmerName" value={settings.farmerName} onChange={handleChange} />
         <Input label="Farm Name" name="farmName" value={settings.farmName} onChange={handleChange} />
         <Input label="Preferred Feed Type" name="preferredFeed" value={settings.preferredFeed} onChange={handleChange} />
@@ -46,7 +46,7 @@ export default function SettingsPage() {
         </div>
 
         <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded">
-          Save Settings
+          Save
         </button>
       </div>
     </div>
@@ -61,7 +61,7 @@ function Input({ label, name, value, onChange }) {
         name={name}
         value={value}
         onChange={onChange}
-        className="mt-1 block w-full border p-2"
+        className="mt-1 block w-full border p-2 text-blue-500"
       />
     </div>
   );

@@ -61,7 +61,7 @@ function MortalityLogPage () {
   }, []);
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-semibold text-blue-900">Mortality Tracker</h1>
+      <h1 className="text-xl font-semibold text-blue-900">Mortality Tracker</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
         <div>
@@ -123,7 +123,7 @@ function MortalityLogPage () {
       </form>
 
       <div>
-      <h2 className="text-xl font-semibold mb-2">Mortality History</h2>
+      <h2 className="text-xl font-semibold mb-2 text-gray-500">Mortality History</h2>
       {entries.length === 0 ? (
           <p className="text-gray-500">No mortality records yet.</p>
       ) : (
@@ -138,7 +138,7 @@ function MortalityLogPage () {
       )}
     </div>
       <div>
-      <h2 className="text-xl font-semibold mb-4">Mortality Trends</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-500">Mortality Trends</h2>
       <MortalityChart entries={entries}/>
       </div>
       </div>

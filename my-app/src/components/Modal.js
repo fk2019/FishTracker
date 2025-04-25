@@ -33,7 +33,7 @@ export function Modal({ isOpen, closeModal, onSubmit }) {
               name="name"
               value={pondData.name}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="w-full p-2 border border-blue-300 rounded text-sm text-blue-500"
               required
             />
           </div>
@@ -45,7 +45,7 @@ export function Modal({ isOpen, closeModal, onSubmit }) {
               name="size"
               value={pondData.size}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="w-full p-2 border border-blue-300 rounded text-sm text-blue-500"
               required
             />
           </div>
@@ -57,7 +57,7 @@ export function Modal({ isOpen, closeModal, onSubmit }) {
               name="stockingDate"
               value={pondData.stockingDate}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="w-full p-2 border border-blue-300 rounded text-sm text-blue-500"
               required
             />
           </div>
@@ -69,7 +69,18 @@ export function Modal({ isOpen, closeModal, onSubmit }) {
               name="fishCount"
               value={pondData.fishCount}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="w-full p-2 border border-blue-300 rounded text-sm text-blue-500"
+              required
+            />
+      </div>
+      <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Species</label>
+            <input
+              type="text"
+              name="species"
+              value={pondData.species}
+              onChange={handleChange}
+              className="w-full p-2 border border-blue-300 rounded text-sm text-blue-500"
               required
             />
           </div>
@@ -80,7 +91,7 @@ export function Modal({ isOpen, closeModal, onSubmit }) {
               name="status"
               value={pondData.status}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
+              className="w-full p-2 border border-blue-300 rounded text-sm text-blue-500"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
