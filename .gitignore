@@ -1,0 +1,4 @@
+*.json
+*.mjs
+node_modules/
+~*

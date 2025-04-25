@@ -1,0 +1,76 @@
+'use client';
+import React, { useEffect, useState } from 'react';
+import FeedChart from '../../components/FeedChart';
+import GradingChart from '../../components/GradingChart';
+
+export default function ReportsPage() {
+  const [stats, setStats] = useState({
+    totalFeedings: 0,
+    totalFeedQuantity: 0,
+    averageFeedPerDay: 0,
+    lastGradingAvgWeight: 'N/A',
+    totalMortalities: 0, // Optional: mock for now
+  });
+
+  useEffect(() => {
+    const feedingLogs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
+    const gradingData = JSON.parse(localStorage.getItem('gradingData') || '[]');
+
+    // 🟦 Feeding Stats
+    const totalFeedings = feedingLogs.length;
+    const totalFeedQuantity = feedingLogs.reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
+
+    const daysSet = new Set(feedingLogs.map(log => log.date));
+    const averageFeedPerDay = daysSet.size > 0 ? (totalFeedQuantity / daysSet.size).toFixed(1) : 0;
+
+    // 🟩 Grading Stats
+    let lastGradingAvgWeight = 'N/A';
+    if (gradingData.length > 0) {
+      const lastGrading = gradingData[gradingData.length - 1];
+      lastGradingAvgWeight = `${lastGrading.weight}g`;
+    }
+
+    // 🟥 Mortality Placeholder (future dev)
+    const totalMortalities = 0;
+
+    setStats({
+      totalFeedings,
+      totalFeedQuantity,
+      averageFeedPerDay,
+      lastGradingAvgWeight,
+      totalMortalities,
+    });
+  }, []);
+
+  return (
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Reports & Insights</h1>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <StatCard title="Total Feedings" value={stats.totalFeedings} />
+        <StatCard title="Total Feed (kg)" value={stats.totalFeedQuantity} />
+        <StatCard title="Avg Feed/Day (kg)" value={stats.averageFeedPerDay} />
+        <StatCard title="Avg Weight (Last Grading)" value={stats.lastGradingAvgWeight} />
+        <StatCard title="Total Mortalities" value={stats.totalMortalities} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="p-4 border rounded bg-white shadow">
+          <h2 className="font-bold text-lg mb-2 text-gray-500">Feed Consumption Trend</h2>
+        </div>
+        <div className="p-4 border rounded bg-white shadow">
+          <h2 className="font-bold text-lg mb-2 text-gray-500">Weight Gain Trend</h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ title, value }) {
+  return (
+    <div className="p-4 border rounded bg-white shadow">
+      <p className="text-gray-500 text-sm">{title}</p>
+      <p className="text-xl font-bold text-blue-700">{value}</p>
+    </div>
+  );
+}
