@@ -10,7 +10,8 @@ export function Sidebar() {
         <Link href="/ponds" className="hover:text-blue-200 transition">Pond Management</Link>
       <Link href="/logs" className="hover:text-blue-200 transition">Feeding Log</Link>
       <Link href="/logs/mortality" className="hover:text-blue-200 transition">Mortality Log</Link>
-        <Link href="/grading" className="hover:text-blue-200 transition">Grading</Link>
+      <Link href="/grading" className="hover:text-blue-200 transition">Grading</Link>
+      <Link href="/harvesting" className="hover:text-blue-200 transition">Harvesting</Link>
         <Link href="/reports" className="hover:text-blue-200 transition">Reports</Link>
         <Link href="/settings" className="hover:text-blue-200 transition">Settings</Link>
       </nav>
