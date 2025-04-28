@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import FeedChart from '../../components/FeedChart';
+import AuthWrapper from '../../components/AuthWrapper';
 function FeedingLogPage() {
   const [entries, setEntries] = useState([]);
   const [formData, setFormData] = useState({
@@ -66,6 +67,7 @@ function FeedingLogPage() {
     setEntries(fetchedEntries);
   }, []);
   return (
+    <AuthWrapper>
     <div>
       <h1 className="text-2xl font-semibold text-blue-900">Feeding Tracker</h1>
 
@@ -158,6 +160,7 @@ function FeedingLogPage() {
       <FeedChart entries={entries} /> {/* Pass in entries as prop */}
     </div>
       </div>
+      </AuthWrapper>
   );
 }
 ///table

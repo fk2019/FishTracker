@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import GradingChart from '../../components/GradingChart';
+import AuthWrapper from '../../components/AuthWrapper';
 
 export default function GradingTrackerPage() {
   const [entries, setEntries] = useState([]);
@@ -60,6 +61,7 @@ export default function GradingTrackerPage() {
     setEntries(fetchedEntries);
   }, []);
   return (
+    <AuthWrapper>
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-semibold text-blue-900">Grading Tracker</h1>
 
@@ -139,8 +141,9 @@ export default function GradingTrackerPage() {
     </div>
       <div>
       <h2 className="text-xl font-semibold mb-2 text-gray-500">Growth Trends</h2>
-      <GradingChart entries={entries} /> {/* Pass in entries as prop */}
+      <GradingChart entries={entries} />
     </div>
       </div>
+      </AuthWrapper>
   );
 }

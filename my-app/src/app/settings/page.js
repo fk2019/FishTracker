@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-
+import AuthWrapper from '../../components/AuthWrapper';
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
     farmerName: '',
@@ -24,6 +24,7 @@ export default function SettingsPage() {
   };
 
   return (
+    <AuthWrapper>
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4 text-blue-900">Settings</h1>
 
@@ -49,7 +50,8 @@ export default function SettingsPage() {
           Save
         </button>
       </div>
-    </div>
+      </div>
+      </AuthWrapper>
   );
 }
 

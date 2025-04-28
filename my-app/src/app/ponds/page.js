@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { PondCard } from '../../components/PondCard';
 import { Modal } from '../../components/Modal';
-
+import AuthWrapper from '../../components/AuthWrapper';
 const dummyPonds = [
   {
     name: 'Pond 1',
@@ -35,6 +35,7 @@ export default function PondsPage() {
 
   //const pondMortalities = ponds.filter((entry) ==> entry.name === name);
   return (
+    <AuthWrapper>
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-blue-900">Pond Management</h1>
@@ -54,5 +55,6 @@ export default function PondsPage() {
 
       <Modal isOpen={isModalOpen} closeModal={closeModal} onSubmit={handleAddPond} />
       </div>
+      </AuthWrapper>
   );
 }

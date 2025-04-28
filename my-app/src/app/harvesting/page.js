@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import HarvestingChart from '../../components/HarvestingChart';
-
+import AuthWrapper from '../../components/AuthWrapper';
 export default function HarvestingTrackerPage() {
   const [entries, setEntries] = useState([]);
   const [formData, setFormData] = useState({
@@ -64,6 +64,7 @@ export default function HarvestingTrackerPage() {
     setEntries(fetchedEntries);
   }, []);
   return (
+    <AuthWrapper>
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-semibold text-blue-900">Harvesting Tracker</h1>
 
@@ -157,5 +158,6 @@ export default function HarvestingTrackerPage() {
       <HarvestingChart entries={entries} />
     </div>
       </div>
+      </AuthWrapper>
   );
 }

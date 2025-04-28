@@ -1,7 +1,8 @@
 // src/components/Dashboard.js
-
+import AuthWrapper from './AuthWrapper';
 export function Dashboard({isMenuOpen}) {
   return (
+    <AuthWrapper>
       <div className={`space-y-6 display ${isMenuOpen ? 'none' : 'block'}`}>
       <h1 className="text-3xl font-semibold text-blue-900">Dashboard</h1>
 
@@ -30,6 +31,7 @@ export function Dashboard({isMenuOpen}) {
           <li>2:00 PM – Grading done in Pond 3</li>
         </ul>
       </div>
-    </div>
+      </div>
+      </AuthWrapper>
   );
 }

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import FeedChart from '../../components/FeedChart';
 import GradingChart from '../../components/GradingChart';
-
+import AuthWrapper from '../../components/AuthWrapper';
 export default function ReportsPage() {
   const [stats, setStats] = useState({
     totalFeedings: 0,
@@ -43,6 +43,7 @@ export default function ReportsPage() {
   }, []);
 
   return (
+    <AuthWrapper>
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4 text-blue-900">Reports & Insights</h1>
 
@@ -62,7 +63,8 @@ export default function ReportsPage() {
           <h2 className="font-bold text-lg mb-2 text-gray-500">Weight Gain Trend</h2>
         </div>
       </div>
-    </div>
+      </div>
+      </AuthWrapper>
   );
 }
 

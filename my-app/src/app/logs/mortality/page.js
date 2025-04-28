@@ -2,7 +2,7 @@
 import { useRouter} from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import MortalityChart from '../../../components/MortalityChart';
-
+import AuthWrapper from '../../../components/AuthWrapper';
 function MortalityLogPage () {
   const [entries, setEntries] = useState([]);
   const [formData, setFormData] = useState({
@@ -79,6 +79,7 @@ function MortalityLogPage () {
 
 
   return (
+    <AuthWrapper>
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-xl font-semibold text-blue-900">Mortality Tracker</h1>
 
@@ -188,6 +189,7 @@ function MortalityLogPage () {
       <MortalityChart entries={filteredEntry}/>
       </div>
       </div>
+      </AuthWrapper>
   );
 }
 export default MortalityLogPage;

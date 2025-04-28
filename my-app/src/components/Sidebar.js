@@ -2,10 +2,11 @@
 'use client'
 import {useState} from 'react';
 import Link from 'next/link';
-import {MdDashboard} from 'react-icons/md';
+import AuthWrapper from './AuthWrapper';
 export function Sidebar({MenuOpen, linkClick}) {
   let isMenuOpen = true;
   return (
+    <AuthWrapper>
       <aside className={`bg-blue-800 text-white min-h-screen p-6 visible ${isMenuOpen ? 'visible' : 'hidden'}
  visible md: visible`}>
       <h2 className="text-2xl font-bold mb-8"> <div className="fish">🐟</div> FishFarm</h2>
@@ -20,5 +21,6 @@ export function Sidebar({MenuOpen, linkClick}) {
         <Link href="/settings" className="hover:text-blue-200 transition">Settings</Link>
       </nav>
       </aside>
+      </AuthWrapper>
   );
 }
