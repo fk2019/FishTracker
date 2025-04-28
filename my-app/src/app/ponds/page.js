@@ -40,7 +40,7 @@ export default function PondsPage() {
         <h1 className="text-2xl font-semibold text-blue-900">Pond Management</h1>
         <button
           onClick={openModal}
-          className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
+          className="add-pond bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
         >
           + Add Pond
         </button>

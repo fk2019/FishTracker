@@ -1,7 +1,7 @@
 // src/app/layout.js
 import './globals.css';
 import { Sidebar } from '../components/Sidebar';
-import { Menu } from '../components/Menu';
+
 export const metadata = {
   title: 'FishFarm Dashboard',
   description: 'Aquaculture Record Keeping Platform',
@@ -11,10 +11,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="flex min-h-screen bg-blue-50">
+      <Sidebar  />
 
-      <Sidebar />
       <main className="flex-1 p-4">
-      <Menu />
+      <div
+        className="p-5 text-gray-500 bg-blue-400 menu"
+      >
+      <button>
+      ☰
+    </button>
+      </div>
       {children}
     </main>
 

@@ -1,8 +1,8 @@
 // src/components/Dashboard.js
 
-export function Dashboard() {
+export function Dashboard({isMenuOpen}) {
   return (
-    <div className="space-y-6">
+      <div className={`space-y-6 display ${isMenuOpen ? 'none' : 'block'}`}>
       <h1 className="text-3xl font-semibold text-blue-900">Dashboard</h1>
 
       {/* Quick Stats */}

@@ -22,7 +22,7 @@ export function Modal({ isOpen, closeModal, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg w-96">
         <h2 className="text-xl font-semibold mb-4">Add New Pond</h2>
         <form onSubmit={handleSubmit}>

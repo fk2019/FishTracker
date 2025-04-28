@@ -66,7 +66,7 @@ function FeedingLogPage() {
     setEntries(fetchedEntries);
   }, []);
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div>
       <h1 className="text-2xl font-semibold text-blue-900">Feeding Tracker</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
