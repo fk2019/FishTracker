@@ -13,8 +13,8 @@ export default function SignupPage() {
     // Add actual signup logic later
   };
   const router = useRouter();
-  localStorage.setItem('isLoggedIn', 'true');
-  router.push('/ponds');
+  localStorage.setItem('isLoggedIn', 'false');
+
 
 
   return (

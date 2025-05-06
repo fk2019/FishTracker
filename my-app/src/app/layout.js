@@ -2,6 +2,7 @@
 import './globals.css';
 import { Sidebar } from '../components/Sidebar';
 import { Menu } from '../components/Menu';
+import { LoginPage } from '../components/LoginPage';
 import AuthWrapper from '../components/AuthWrapper';
 export const metadata = {
   title: 'FishFarm Dashboard',
@@ -10,6 +11,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <AuthWrapper>
     <html lang="en">
       <body className="flex min-h-screen bg-blue-50">
       <Sidebar />
@@ -19,6 +21,7 @@ export default function RootLayout({ children }) {
     </main>
 
       </body>
-    </html>
+      </html>
+      </AuthWrapper>
   );
 }

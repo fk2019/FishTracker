@@ -1,0 +1,106 @@
+// src/app/layout.js
+'use client'
+import './globals.css';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import {usePathname } from 'next/navigation';
+const links = [
+  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Ponds', href: '/ponds' },
+  { name: 'Feeding', href: '/feeding' },
+  { name: 'Mortality', href: '/mortality' },
+  { name: 'Grading', href: '/grading' },
+  { name: 'Harvest', href: '/harvest' },
+  { name: 'Reports', href: '/reports' },
+  { name: 'Settings', href: '/settings' },
+
+];
+
+const AuthWrapper = ({ children }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const publicPaths = ['/login', '/signup'];
+    const currentPath = window.location.pathname;
+    const user = localStorage.getItem('user');
+    if (!user && !publicPaths.includes(currentPath)) router.push('/login');
+  }, [router]);
+
+  return <>{children}</>;
+};
+
+const Sidebar = ({ show, onClose }) => {
+  return (
+    <div
+      className={`sidebar fixed z-40 bg-white w-full sm:w-64 h-full sm:static sm:block transition-transform duration-300 ease-in-out ${
+        show ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+      }`}
+    >
+      <div className="flex justify-between items-center p-4 sm:hidden">
+        <span className="text-xl font-bold">Menu</span>
+        <button onClick={onClose} className="text-xl">×</button>
+      </div>
+      <ul className="flex flex-col gap-4 p-4">
+        {links.map((link) => (
+          <li key={link.name}>
+            <a
+              href={link.href}
+              onClick={onClose}
+              className="block p-2 rounded hover:bg-white-100 side-link"
+            >
+              {link.name}
+            </a>
+          </li>
+        ))}
+        <li>
+          <button
+            onClick={() => {
+              localStorage.removeItem('user');
+              window.location.href = '/login';
+            }}
+            className="block w-full text-left p-2 rounded hover:bg-red-100 text-red-600 logout"
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+
+
+export default function Layout({ children }) {
+  const [farmName, setFarmName] = useState('');
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user')) || '';
+    setFarmName(user.farmName || 'My Farm');
+  },[]);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  let showSidebar = true;
+  if (pathname === '/' || pathname === '/login' || pathname === '/signup') showSidebar = false;
+  return (
+      <html lang="en">
+      <body>
+    <AuthWrapper>
+      <div className="flex h-screen overflow-hidden">
+      {showSidebar && <Sidebar show={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
+        <div className="flex-1 overflow-auto">
+          <div className="sm:hidden p-4">
+            <button onClick={() => setSidebarOpen(true)} className="text-xl menu-button">☰</button>
+      </div>
+      <main className="p-4">
+      <div className="farm-name">
+      <span className="text-sm text-gray-700 font-semibold">{farmName}</span>
+      </div>
+      {children}
+    </main>
+        </div>
+      </div>
+      </AuthWrapper>
+      </body>
+      </html>
+  );
+}

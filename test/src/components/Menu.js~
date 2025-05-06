@@ -1,0 +1,20 @@
+// src/app/layout.js
+'use client'
+import './globals.css';
+import {useState } from 'react';
+//import { Sidebar } from '../components/Sidebar';
+
+export default function Menu() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <html lang="en">
+      <div
+        className="p-5 text-gray-500 bg-blue-400 menu"
+      >
+      <button>
+      ☰
+    </button>
+      </div>
+    </html>
+  );
+}
