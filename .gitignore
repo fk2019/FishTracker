@@ -2,3 +2,5 @@
 *.mjs
 node_modules/
 ~*
+*.next*
+*~
