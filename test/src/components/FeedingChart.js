@@ -4,7 +4,7 @@ import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 export default function FeedLineChart({ feedings }) {
-  if (!Array.isArray(feedings)) return <p>No feed data</p>;
+  if (!Array.isArray(feedings)) return <p className="no-record">No feed data</p>;
 
   const data = {
     labels: feedings.map(h => `${h.date}`),
@@ -34,8 +34,8 @@ export default function FeedLineChart({ feedings }) {
   };
 
   return (
-    <div className="mt-10 bg-white">
-      <h2 className="text-xl font-semibold text-blue-900 mb-4">Feed History</h2>
+    <div className="mt-10 bg-white chart">
+      <h2 className="text-xl font-semibold text-blue-900 mb-4">Feeding Trend</h2>
       <Line data={data} options={options} />
     </div>
   );

@@ -112,8 +112,8 @@ export default function HarvestingTrackerPage() {
     const file = e.target.files[0];
     if (!file) return;
     const options = {
-      maxSizeMB: 0.2,        // Target max size ~200KB
-      maxWidthOrHeight: 800, // Resize if too large
+      maxSizeMB: 0.2,
+      maxWidthOrHeight: 800,
       useWebWorker: true,
     };
     try {
@@ -127,7 +127,7 @@ export default function HarvestingTrackerPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold text-blue-900 text-bg">Harvest Tracker</h1>
+      <div className="center-txt"><h1 className="text-2xl font-semibold text-blue-900 text-bg">Harvest Tracker</h1></div>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
         <div>
           <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
@@ -216,7 +216,7 @@ export default function HarvestingTrackerPage() {
 
       <div>
       <hr/>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Harvest History</h2>
+      <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Harvest History</h2></div>
       {recentHarvests.length === 0 ? (
           <p className="text-gray-500 no-record">No harvesting records yet.</p>
       ) : (
@@ -232,7 +232,7 @@ export default function HarvestingTrackerPage() {
     </div>
       <hr/>
       <div>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Harvest Trends</h2>
+      <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Harvest Trends</h2></div>
       <div>
       <select
     name="pond"

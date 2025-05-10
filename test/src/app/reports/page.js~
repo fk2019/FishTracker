@@ -1,9 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import FeedChart from '../../components/FeedChart';
+import FeedingChart from '../../components/FeedingChart';
 import GradingChart from '../../components/GradingChart';
 
 export default function ReportsPage() {
+  const [entries, setEntries] = useState([]);
+  const [harvest, setHarvest] = useState([]);
+  const [ponds, setPonds] = useState([]);
+  const [pond, setPond] = useState([]);
+  const [formData, setFormData] = useState({
+    pond: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const [stats, setStats] = useState({
     totalFeedings: 0,
     totalFeedQuantity: 0,
@@ -13,22 +25,27 @@ export default function ReportsPage() {
   });
 
   useEffect(() => {
-    const feedingLogs = JSON.parse(localStorage.getItem('feedingLogs') || '[]');
-    const gradingData = JSON.parse(localStorage.getItem('gradingData') || '[]');
+    const feedingLogs = JSON.parse(localStorage.getItem('feedingData') || '[]');
+    const gradingLogs = JSON.parse(localStorage.getItem('gradingData') || '[]');
+    const savedPonds = JSON.parse(localStorage.getItem('ponds')) || [];
+    const selectedPond = savedPonds.find(p => p.name === formData.pond) || pond;
+    setPond(selectedPond || null);
+    setPonds(savedPonds);
 
+    //search harvestss
+    const feedRecord = feedingLogs.find(log => log.name === selectedPond.name);
+    const gradingRecord = gradingLogs.find(log => log.name === selectedPond.name);
     // 🟦 Feeding Stats
-    const totalFeedings = feedingLogs.length;
-    const totalFeedQuantity = feedingLogs.reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
-
+    const totalFeedings = feedRecord.feedNumber;
+    const totalFeedQuantity = feedRecord.cumulativeWeight;
+    console.log(totalFeedQuantity);
     const daysSet = new Set(feedingLogs.map(log => log.date));
     const averageFeedPerDay = daysSet.size > 0 ? (totalFeedQuantity / daysSet.size).toFixed(1) : 0;
 
     // 🟩 Grading Stats
-    let lastGradingAvgWeight = 'N/A';
-    if (gradingData.length > 0) {
-      const lastGrading = gradingData[gradingData.length - 1];
-      lastGradingAvgWeight = `${lastGrading.weight}`;
-    }
+    let lastGradingAvgWeight;
+    if (gradingRecord) lastGradingAvgWeight = gradingRecord.averageWeight;
+    console.log(lastGradingAvgWeight, gradingRecord);
 
     // 🟥 Mortality Placeholder (future dev)
     const totalMortalities = 0;
@@ -40,12 +57,25 @@ export default function ReportsPage() {
       lastGradingAvgWeight,
       totalMortalities,
     });
-  }, []);
+  }, [formData.pond]);
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4 text-blue-900">Reports & Insights</h1>
-
+      <h1 className="text-xl font-bold mb-4 text-blue-900 text-bg">Reports & Insights</h1>
+      <div>
+      <select
+    name="pond"
+    value={formData.pond}
+    onChange={handleChange}
+            className="w-full border p-2 rounded text-sm text-blue-500 bg-white"
+      >
+      <option value="">-- Select Pond --</option>
+      {ponds && ponds.map((p) => (
+          <option key={p.name} value={p.name}>{p.name}</option>
+      ))}
+    </select>
+      </div>
+    <div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <StatCard title="Total Feedings" value={stats.totalFeedings} />
         <StatCard title="Total Feed (kg)" value={stats.totalFeedQuantity} />
@@ -57,11 +87,14 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-4 border rounded bg-white shadow">
           <h2 className="font-bold text-lg mb-2 text-gray-500">Feed Consumption Trend</h2>
+          <FeedingChart feedings={pond.feedings}/>
         </div>
         <div className="p-4 border rounded bg-white shadow">
           <h2 className="font-bold text-lg mb-2 text-gray-500">Weight Gain Trend</h2>
+          <GradingChart gradings={pond.gradings}/>
         </div>
       </div>
+    </div>
     </div>
   );
 }

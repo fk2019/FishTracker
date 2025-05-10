@@ -86,7 +86,7 @@ export default function FeedingTrackerPage() {
     const prevFeeds = freshPond.feedings || [];
     const feedNumber = prevFeeds.length + 1;
     const weight = Number(newEntry.weight);
-    const prevCumulative = prevFeeds.length > 0 && prevFeeds[prevFeeds.length - 1].cumulative ? prevFeeds[prevFeeds.length - 1].cumulative : 0;
+    const prevCumulative = prevFeeds.length > 0 && prevFeeds[prevFeeds.length - 1].cumulativeWeight ? prevFeeds[prevFeeds.length - 1].cumulativeWeight : 0;
     const cumulativeWeight = prevCumulative + weight;
     const newFeed = {
       feedNumber: feedNumber,
@@ -148,10 +148,9 @@ export default function FeedingTrackerPage() {
   };
   let feeds = [];
   if (pond) feeds = feedTypes[pond.species];
-  console.log('feeds', pond);
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold text-blue-900 text-bg">Feed Tracker</h1>
+      <div className="center-txt"><h1 className="text-2xl font-semibold text-blue-900 text-bg">Feed Tracker</h1></div>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
         <div>
           <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
@@ -206,7 +205,7 @@ export default function FeedingTrackerPage() {
     </select>
         </div>
       <div>
-      <div className="text-lg font-semibold text-blue-800 mb-2">Upload Image (optional)</div>
+      <div className="text-lg font-semibold text-blue-800 mb-2">Upload Feed Image (optional)</div>
       <label className="w-full border p-2 rounded text-sm text-blue-500 upload" htmlFor="upload">Choose file</label>
       <input
     id="upload"
@@ -235,7 +234,7 @@ export default function FeedingTrackerPage() {
 
       <div>
       <hr/>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Feed History</h2>
+      <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Feeding History</h2></div>
       {recentFeeds.length === 0 ? (
           <p className="text-gray-500 no-record">No feeding records yet.</p>
       ) : (
@@ -251,7 +250,7 @@ export default function FeedingTrackerPage() {
     </div>
       <hr/>
       <div>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Feed Trends</h2>
+      <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Feeding Trends</h2></div>
       <div>
       <select
     name="pond"

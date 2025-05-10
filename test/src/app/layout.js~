@@ -9,6 +9,7 @@ const links = [
   { name: 'Ponds', href: '/ponds' },
   { name: 'Feeding', href: '/feeding' },
   { name: 'Mortality', href: '/mortality' },
+  { name: 'Grading', href: '/grading' },
   { name: 'Harvest', href: '/harvest' },
   { name: 'Reports', href: '/reports' },
   { name: 'Settings', href: '/settings' },
@@ -45,7 +46,7 @@ const Sidebar = ({ show, onClose }) => {
             <a
               href={link.href}
               onClick={onClose}
-              className="block p-2 rounded hover:bg-blue-100"
+              className="block p-2 rounded hover:bg-white-100 side-link"
             >
               {link.name}
             </a>
@@ -57,7 +58,7 @@ const Sidebar = ({ show, onClose }) => {
               localStorage.removeItem('user');
               window.location.href = '/login';
             }}
-            className="block w-full text-left p-2 rounded hover:bg-red-100 text-red-600"
+            className="block w-full text-left p-2 rounded hover:bg-red-100 text-red-600 logout"
           >
             Logout
           </button>
@@ -67,7 +68,15 @@ const Sidebar = ({ show, onClose }) => {
   );
 };
 
+
+
 export default function Layout({ children }) {
+  const [farmName, setFarmName] = useState('');
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user')) || '';
+    setFarmName(user.farmName || 'My Farm');
+  },[]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   let showSidebar = true;
@@ -80,9 +89,14 @@ export default function Layout({ children }) {
       {showSidebar && <Sidebar show={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
         <div className="flex-1 overflow-auto">
           <div className="sm:hidden p-4">
-            <button onClick={() => setSidebarOpen(true)} className="text-xl">☰</button>
+            <button onClick={() => setSidebarOpen(true)} className="text-xl menu-button">☰</button>
       </div>
-          <main className="p-4">{children}</main>
+      <main className="p-4">
+      <div className="farm-name">
+      <span className="text-sm text-gray-700 font-semibold">{farmName}</span>
+      </div>
+      {children}
+    </main>
         </div>
       </div>
       </AuthWrapper>

@@ -30,21 +30,27 @@ body {
     background-blend-mode: multiply;
 }
 
-.menu {
-    display: flex;
-    flex-direction: row;
-    flex-basis: auto;
-    font: 12px;
-    width: 100%;
-    justify-content: space-between;
-    border-radius: 10px;
-}
 .menu-button {
+    color: #1034A6;
+    font-weight: 900;
+}
+.menu-button, .upload {
     cursor: pointer;
 }
-
+.logout {
+    color: #E52B50;
+}
 .sidebar {
-    color: #7988;
+    color: #1034A6;
+    font-weight: 600;
+    background:  url('../assets/fish_p.png');/*#1ca9c9;*/
+    background-size: contain;
+}
+.side-link, .logout {
+    background:  #A4DDED;
+}
+.side-link:hover, .logout:hover {
+    background: white;
 }
 flex {
     flex-direction: column;
@@ -68,12 +74,18 @@ flex {
     border-radius: 1rem;
 
 }
+.no-record {
+    color: white;
+    font-family: sans-serif;
+    font-weight: 600;
+}
 .text-bg {
     display: inline-flex;
     background: white;
     opacity: 90%;
-    border-radius: 1rem;
-    padding: .4rem;
+    border-radius: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     margin-top: 2rem;
     margin-bottom: .1rem;
 }
@@ -92,17 +104,29 @@ hr {
 }
 .farm-name {
     display: flex;
-
     border-radius: 1rem;
     background:none;
     padding: .2rem;
     justify-content: center;
 }
+.top-margin {
+    margin-top: 3rem;
+}
 .farm-name>span{
     font-size: 2rem;
-    color: blue;
+    color: #000f89;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
     font-weight: 800;
+}
+.chart {
+    border-radius: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    background:   #A4DDED;
+}
+.report {
+    margin-bottom: 1rem;
 }
 @media screen and (max-width: 448px) {
     body {

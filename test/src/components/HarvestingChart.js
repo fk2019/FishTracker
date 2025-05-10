@@ -4,10 +4,10 @@ import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 export default function HarvestLineChart({ harvests }) {
-  if (!Array.isArray(harvests)) return <p>No harvest data</p>;
+  if (!Array.isArray(harvests)) return <p className="no-record">No harvest data</p>;
 
   const data = {
-    labels: harvests.map(h => `#${h.harvestNumber}`),
+    labels: harvests.map(h => `${h.date}`),
     datasets: [
       {
         label: 'Count',
@@ -34,8 +34,8 @@ export default function HarvestLineChart({ harvests }) {
   };
 
   return (
-    <div className="mt-10 bg-white">
-      <h2 className="text-xl font-semibold text-blue-900 mb-4">Harvest History</h2>
+    <div className="mt-10 bg-white chart">
+      <h2 className="text-xl font-semibold text-blue-900 mb-4">Harvest Trend</h2>
       <Line data={data} options={options} />
     </div>
   );

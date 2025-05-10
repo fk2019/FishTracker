@@ -17,14 +17,14 @@ export default function PondsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6 top-margin">
-        <h1 className="text-2xl font-semibold text-blue-900 text-bg">Pond Management</h1>
+      <div className="ponds flex justify-between items-center mb-6 top-margin">
+        <div className="center-txt-button"><h1 className=" text-2xl font-semibold text-blue-900 text-bg dark-green">Pond Management</h1>
         <button
           onClick={openModal}
           className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
         >
           + Add Pond
-        </button>
+        </button></div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

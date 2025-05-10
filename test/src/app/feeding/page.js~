@@ -2,14 +2,36 @@
 import imageCompression from 'browser-image-compression';
 import { useState, useEffect } from 'react';
 import FeedingChart from '../../components/FeedingChart';
+
+const feedTypes = {
+    Catfish: [
+      { stage: "Starter", size: "0.2 mm", description: "Used during early fry stage (0-2 weeks)" },
+      { stage: "Crumble", size: "0.5 mm", description: "Small fry, transitioning to fingerlings" },
+      { stage: "Pre-grower", size: "1 mm", description: "For fingerlings (2-4 weeks)" },
+      { stage: "Freshwater Shrimp (Ochong'a)", size: "1-5 mm", description: "For juveniles and adults (~1 month+)" },
+      { stage: "BSF Larval Meal", size: "1.5-2 mm", description: "For juveniles and adults (~1 month+)" },
+      { stage: "Grower", size: "2 mm", description: "For juveniles (~1 month+)" },
+      { stage: "Grower Plus", size: "3 mm", description: "Sub-adults, supports fast growth" },
+      { stage: "Finisher", size: "4-6 mm", description: "Final stage before harvest (~3+ months)" }
+    ],
+    Tilapia: [
+      { stage: "Starter", size: "0.5 mm", description: "Used during fry stage (0-2 weeks)" },
+      { stage: "Pre-grower", size: "1 mm", description: "For fingerlings (2-4 weeks)" },
+      { stage: "Freshwater Shrimp (Ochong'a)", size: "1-5 mm", description: "For juveniles and adults (~1 month+)" },
+      { stage: "BSF Larval Meal", size: "1.5-2 mm", description: "For juveniles and adults (~1 month+)" },
+      { stage: "Grower", size: "2 mm", description: "Juveniles and sub-adults" },
+      { stage: "Finisher", size: "3-4 mm", description: "Market size tilapia, final growth phase" }
+    ]
+};
+
 export default function FeedingTrackerPage() {
   const [entries, setEntries] = useState([]);
   const [formData, setFormData] = useState({
     pond: '',
     date: '',
-    averageWeight: '',
-    totalWeight: '',
-    count: '',
+    weight: '',
+    species:'',
+    feedtype:'',
   });
   const [unit, setUnit] = useState('');
   const [ponds, setPonds] = useState([]);
@@ -34,7 +56,7 @@ export default function FeedingTrackerPage() {
   }, [formData.pond,ponds]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('feedingingData');
+    const saved = localStorage.getItem('feedingData');
     if (saved) {
       setEntries(JSON.parse(saved));
     }
@@ -58,21 +80,21 @@ export default function FeedingTrackerPage() {
 
     const freshPond = ponds.find(p => p.name === pond.name) || pond;
     const newEntry = { ...formData };
-    if (!newEntry.pond || !newEntry.date || !newEntry.averageWeight || !newEntry.count) return;
+    if (!newEntry.pond || !newEntry.date || !newEntry.weight || !newEntry.feedType) return;
 
     setEntries([newEntry, ...entries]);
     const prevFeeds = freshPond.feedings || [];
     const feedNumber = prevFeeds.length + 1;
-    const count = Number(newEntry.count);
+    const weight = Number(newEntry.weight);
     const prevCumulative = prevFeeds.length > 0 && prevFeeds[prevFeeds.length - 1].cumulative ? prevFeeds[prevFeeds.length - 1].cumulative : 0;
-    const cumulativeCount = prevCumulative + count;
+    const cumulativeWeight = prevCumulative + weight;
     const newFeed = {
       feedNumber: feedNumber,
       date: newEntry.date,
-      averageWeight: newEntry.averageWeight,
-      count: count,
-      cumulative: cumulativeCount,
+      weight: weight,
+      cumulativeWeight: cumulativeWeight,
       image: fishImage,
+      feedType: newEntry.feedType,
     }
     const updatedFormData = {
       name: formData.pond,
@@ -124,7 +146,8 @@ export default function FeedingTrackerPage() {
     console.error('Image compression failed:', error);
   }
   };
-
+  let feeds = [];
+  if (pond) feeds = feedTypes[pond.species];
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-semibold text-blue-900 text-bg">Feed Tracker</h1>
@@ -156,38 +179,33 @@ export default function FeedingTrackerPage() {
         </div>
 
       <div>
-      <label className="text-lg font-semibold text-blue-800 mb-2">Average Weight ({unit})</label>
+      <label className="text-lg font-semibold text-blue-800 mb-2">Feed Amount ({unit})</label>
           <input
             type="number"
-            name="averageWeight"
-            value={formData.averageWeight}
-            onChange={handleChange}
-            className="w-full border p-2 rounded text-sm text-blue-500"
-          />
-      </div>
-      <div>
-      <label className="text-lg font-semibold text-blue-800 mb-2">Total Weight ({unit})</label>
-          <input
-            type="number"
-            name="totalWeight"
-            value={formData.totalWeight}
+            name="weight"
+            value={formData.weight}
             onChange={handleChange}
             className="w-full border p-2 rounded text-sm text-blue-500"
           />
         </div>
 
-        <div>
-          <label className="text-lg font-semibold text-blue-800 mb-2">Number of Fish Feeded</label>
-          <input
-            type="number"
-            name="count"
-            value={formData.count}
+      <div>
+      <p className="text-sm text-gray-600 mb-4">Species: {pond && pond.species ? pond.species: ''}</p>
+          <label className="text-lg font-semibold text-blue-800 mb-2">Feed Type</label>
+          <select
+            name="feedType"
+            value={formData.feedType}
             onChange={handleChange}
             className="w-full border p-2 rounded text-sm text-blue-500"
-          />
+          >
+      <option value="">-- Select Feed Type --</option>
+      {feeds && feeds.map((p, index) => (
+          <option key={index} value={p.stage}>{p.stage} {p.size}</option>
+      ))}
+    </select>
         </div>
       <div>
-      <div className="text-lg font-semibold text-blue-800 mb-2">Upload Image (optional)</div>
+      <div className="text-lg font-semibold text-blue-800 mb-2">Upload Feed Image (optional)</div>
       <label className="w-full border p-2 rounded text-sm text-blue-500 upload" htmlFor="upload">Choose file</label>
       <input
     id="upload"
@@ -201,7 +219,7 @@ export default function FeedingTrackerPage() {
         <div className="mt-2">
         <img
       src={updatedformData.image}
-      alt="Feeded Fish"
+      alt="Feed"
       className="w-32 h-32 object-cover border rounded"
         />
         </div>
@@ -218,12 +236,12 @@ export default function FeedingTrackerPage() {
       <hr/>
       <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Feed History</h2>
       {recentFeeds.length === 0 ? (
-          <p className="text-gray-500 no-record">No harvesting records yet.</p>
+          <p className="text-gray-500 no-record">No feeding records yet.</p>
       ) : (
           <ul className="space-y-2">
           {recentFeeds.map((entry, index) => (
               <li key={index} className="bg-blue-50 border p-3 text-gray-500 rounded shadow-sm">
-              <strong>{entry.name}</strong> – {entry.totalWeight} {unit}, {entry.count} fish<br />
+              <strong>{entry.name}</strong> – {entry.weight} {unit}, {entry.count} fish<br />
               <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
               </li>
           ))}

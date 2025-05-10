@@ -34,7 +34,7 @@ export default function GradingTrackerPage() {
   }, [formData.pond,ponds]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('harvestingData');
+    const saved = localStorage.getItem('gradingData');
     if (saved) {
       setEntries(JSON.parse(saved));
     }
@@ -42,7 +42,7 @@ export default function GradingTrackerPage() {
 
   // Save to localStorage
   useEffect(() => {
-    localStorage.setItem('gradingingData', JSON.stringify(entries));
+    localStorage.setItem('gradingData', JSON.stringify(entries));
   }, [entries]);
 
   const handleChange = (e) => {
@@ -64,14 +64,12 @@ export default function GradingTrackerPage() {
     const prevGradings = freshPond.gradings || [];
     const gradingNumber = prevGradings.length + 1;
     const count = Number(newEntry.count);
-    const prevCumulative = prevGradings.length > 0 && prevGradings[prevGradings.length - 1].cumulative ? prevGradings[prevGradings.length - 1].cumulative : 0;
-    const cumulativeCount = prevCumulative + count;
     const newGrading = {
       gradingNumber: gradingNumber,
       date: newEntry.date,
       averageWeight: newEntry.averageWeight,
+      totalWeight: newEntry.totalWeight,
       count: count,
-      cumulative: cumulativeCount,
       image: fishImage,
     }
     const updatedFormData = {
@@ -127,7 +125,7 @@ export default function GradingTrackerPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold text-blue-900 text-bg">Grading Tracker</h1>
+      <div className="center-txt"><h1 className="text-2xl font-semibold text-blue-900 text-bg">Grading Tracker</h1></div>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
         <div>
           <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
@@ -216,14 +214,14 @@ export default function GradingTrackerPage() {
 
       <div>
       <hr/>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Grading History</h2>
+      <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Grading History</h2></div>
       {recentGradings.length === 0 ? (
           <p className="text-gray-500 no-record">No grading records yet.</p>
       ) : (
           <ul className="space-y-2">
           {recentGradings.map((entry, index) => (
               <li key={index} className="bg-blue-50 border p-3 text-gray-500 rounded shadow-sm">
-              <strong>{entry.name}</strong> – {entry.totalWeight} {unit}, {entry.count} fish<br />
+              <strong>{entry.name}</strong> – {entry.averageWeight} {unit}(Average), {entry.count} fish<br />
               <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
               </li>
           ))}
@@ -232,7 +230,7 @@ export default function GradingTrackerPage() {
     </div>
       <hr/>
       <div>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Grading Trends</h2>
+      <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Grading Trends</h2></div>
       <div>
       <select
     name="pond"

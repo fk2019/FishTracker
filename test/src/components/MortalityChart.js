@@ -1,80 +1,41 @@
-"use client";
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend } from 'chart.js';
 
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-} from "chart.js";
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-ChartJS.register(
-  LineElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend
-);
-
-export default function MortalityChart({ entries }) {
-  if (!entries || entries.length === 0) return null;
-
-  // Sort by date ASC
-  const sorted = [...entries].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // Extract labels and values
-  const labels = sorted.map((entry) => entry.date);
-  const dataPoints = sorted.map((entry) => entry.count);
+export default function MortalityLineChart({ mortalities }) {
+  if (!Array.isArray(mortalities)) return <p className="no-record">No mortality data</p>;
 
   const data = {
-    labels,
+    labels: mortalities.map(h => `${h.date}`),
     datasets: [
       {
-        label: "Mortalities",
-        data: dataPoints,
+        label: 'Count',
+        data: mortalities.map(h => h.count),
         fill: false,
-        borderColor: "#f87171", // red-400
-        backgroundColor: "#fecaca", // red-200
-        tension: 0.3,
-        pointRadius: 4,
-        pointBackgroundColor: "#b91c1c", // red-800
-      },
-    ],
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.2,
+      }
+    ]
   };
 
   const options = {
     responsive: true,
     plugins: {
-      legend: { position: "top" },
-      tooltip: { mode: "index", intersect: false },
+      legend: {
+        position: 'bottom',
+      }
     },
     scales: {
       y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0,
-        },
-        title: {
-          display: true,
-          text: "Number of Dead Fish",
-        },
-      },
-      x: {
-        title: {
-          display: true,
-          text: "Date",
-        },
-      },
-    },
+        beginAtZero: true
+      }
+    }
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow mt-6">
-      <h2 className="text-lg font-semibold mb-4 text-gray-700">Mortality Trend</h2>
+    <div className="mt-10 bg-white chart">
+      <h2 className="text-xl font-semibold text-blue-900 mb-4">Mortality Trend</h2>
       <Line data={data} options={options} />
     </div>
   );

@@ -7,11 +7,11 @@ export default function FeedLineChart({ feedings }) {
   if (!Array.isArray(feedings)) return <p>No feed data</p>;
 
   const data = {
-    labels: feedings.map(h => `#${h.feedNumber}`),
+    labels: feedings.map(h => `${h.date}`),
     datasets: [
       {
-        label: 'Count',
-        data: feedings.map(h => h.count),
+        label: 'Amount',
+        data: feedings.map(h => h.weight),
         fill: false,
         borderColor: 'rgb(255, 99, 132)',
         tension: 0.2,
@@ -34,7 +34,7 @@ export default function FeedLineChart({ feedings }) {
   };
 
   return (
-    <div className="mt-10 bg-white">
+    <div className="mt-10 bg-white chart">
       <h2 className="text-xl font-semibold text-blue-900 mb-4">Feed History</h2>
       <Line data={data} options={options} />
     </div>

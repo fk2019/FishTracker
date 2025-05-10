@@ -1,9 +1,9 @@
 'use client';
-import { useRouter} from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import imageCompression from 'browser-image-compression';
+import { useState, useEffect } from 'react';
 import MortalityChart from '../../components/MortalityChart';
-
-function MortalityLogPage () {
+import { useRouter} from 'next/navigation';
+export default function MortalityTrackerPage() {
   const [entries, setEntries] = useState([]);
   const [formData, setFormData] = useState({
     pond: '',
@@ -12,39 +12,64 @@ function MortalityLogPage () {
     count: '',
   });
   const router = useRouter();
-  // Load from localStorage
+  const [ponds, setPonds] = useState([]);
+  const [pond, setPond] = useState([]);
+  const [fishImage, setFishImage] = useState(null);
+
   useEffect(() => {
+    const savedPonds = JSON.parse(localStorage.getItem('ponds'));
+    setPonds(savedPonds);
+    if (ponds){
+      const selectedPond = ponds.find(p=>p.name === formData.pond);
+      setPond(selectedPond || null);
+    }
     const saved = localStorage.getItem('mortalityData');
     if (saved) {
       setEntries(JSON.parse(saved));
     }
-  }, []);
-
-  // Save to localStorage
-  useEffect(() => {
-    localStorage.setItem('mortalityData', JSON.stringify(entries));
-  }, [entries]);
+  }, [formData.pond]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    
   };
-  
 
-  //submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    const ponds = JSON.parse(localStorage.getItem('ponds')) || [];
+
+    const freshPond = ponds.find(p => p.name === pond.name) || pond;
     const newEntry = { ...formData };
     if (!newEntry.pond || !newEntry.date || !newEntry.cause || !newEntry.count) return;
 
     setEntries([newEntry, ...entries]);
-    setFormData({
-      pond: '',
-      date: '',
-      cause: '',
-      count: '',
-    });
+    const prevMortalities = freshPond.mortalities || [];
+    const mortalityNumber = prevMortalities.length + 1;
+    const count = Number(newEntry.count);
+    const prevCumulative = prevMortalities.length > 0 && prevMortalities[prevMortalities.length - 1].cumulative ? prevMortalities[prevMortalities.length - 1].cumulative : 0;
+    const cumulativeCount = prevCumulative + count;
+    const newMortality = {
+      mortalityNumber: mortalityNumber,
+      date: newEntry.date,
+      count: count,
+      cause: newEntry.cause,
+      cumulative: cumulativeCount,
+      image: fishImage,
+    }
+    const updatedFormData = {
+      name: formData.pond,
+      ...newMortality
+    }
+    setEntries([updatedFormData, ...entries]);
+    const updatedPond = {
+      ...freshPond,
+      mortalities: [...prevMortalities, newMortality]
+    }
+    console.log(entries);
+    const updatedPonds = ponds.map(p => p.name === pond.name ? updatedPond : p);
+    localStorage.setItem('ponds', JSON.stringify(updatedPonds));
+    localStorage.setItem('mortalityData', JSON.stringify(entries));
   };
+  //history
   const groupByPond = entries.reduce((acc, entry) => {
     if (!acc[entry.pond]) {
       acc[entry.pond] = entry;
@@ -58,70 +83,60 @@ function MortalityLogPage () {
     }
     return acc;
   }, {});
-  const recentMortality = Object.values(groupByPond);
-  const filteredEntry = formData.pond ? entries.filter((entry) => entry.pond === formData.pond) : [];
+  const recentMortalities = Object.values(groupByPond);
+  //chart
   useEffect(() => {
-    // Here you can fetch the data from an API or define it manually
-    // For now, we'll use static data as an example
+    const savedPonds = JSON.parse(localStorage.getItem('ponds')) || [];
+    const freshPond = savedPonds.find(p => p.name === formData.pond) || pond;
+    setPond(freshPond);
+  }, [formData.pond]);
 
-    const fetchedEntries = [
-      { date: '2023-01-01', pond: 'Pond A', count: 1, cause: 'Hypoxia' },
-      { date: '2023-01-15', pond: 'Pond A', count: 3, cause: '' },
-      { date: '2023-01-01', pond: 'Pond B', count: 1, cause: '' },
-      { date: '2023-01-15', pond: 'Pond B', count: 0, cause: '' },
-      { date: '2023-01-01', pond: 'Pond C', count: 5, cause: '' },
-      { date: '2023-01-15', pond: 'Pond C', count: 7, cause: '' },
-    ];
-
-    // Update the state with fetched data
-    setEntries(fetchedEntries);
-  }, []);
-
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const options = {
+      maxSizeMB: 0.2,        // Target max size ~200KB
+      maxWidthOrHeight: 800, // Resize if too large
+      useWebWorker: true,
+    };
+    try {
+    const compressedFile = await imageCompression(file, options);
+    const base64 = await imageCompression.getDataUrlFromFile(compressedFile);
+    setFishImage(base64);
+  } catch (error) {
+    console.error('Image compression failed:', error);
+  }
+  };
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-xl font-semibold text-blue-900">Mortality Tracker</h1>
-
+      <div className="center-txt"><h1 className="text-2xl font-semibold text-blue-900 text-bg">Mortality Tracker</h1></div>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
-      <div>
+        <div>
           <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
           <select
             name="pond"
             value={formData.pond}
             onChange={handleChange}
-    className="w-full border p-2 rounded text-sm text-blue-500"
-    required
+            className="w-full border p-2 rounded text-sm text-blue-500"
           >
             <option value="">-- Select Pond --</option>
-            <option value="Pond A">Pond A</option>
-            <option value="Pond B">Pond B</option>
-            <option value="Pond C">Pond C</option>
+            {ponds && ponds.map((p) => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
           </select>
         </div>
-
+ 
         <div>
-          <label className="text-lg font-semibold text-blue-800 mb-2">Date</label>
+          <label className="text-lg font-semibold text-blue-800 mb-2">Mortality Date</label>
           <input
             type="date"
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full border p-2 rounded text-sm text-blue-500"
+    className="w-full border p-2 rounded text-sm text-blue-500"
           />
         </div>
-      <div>
-          <label className="text-lg font-semibold text-blue-800 mb-2">Number of Mortalities</label>
-          <input
-            type="number"
-            name="count"
-            value={formData.count}
-            onChange={handleChange}
-            className="w-full border p-2 rounded text-sm text-blue-500"
-    placeholder="e.g. 120"
-    required
-          />
-        </div>
-
         <div>
           <label className="text-lg font-semibold text-blue-800 mb-2">Cause</label>
           <input
@@ -130,11 +145,39 @@ function MortalityLogPage () {
             value={formData.cause}
             onChange={handleChange}
             className="w-full border p-2 rounded text-sm text-blue-500"
-            placeholder="e.g. 45"
           />
         </div>
-
-       
+ 
+        <div>
+          <label className="text-lg font-semibold text-blue-800 mb-2">Count</label>
+          <input
+            type="number"
+            name="count"
+            value={formData.count}
+            onChange={handleChange}
+            className="w-full border p-2 rounded text-sm text-blue-500"
+          />
+        </div>
+        <div>
+          <div className="text-lg font-semibold text-blue-800 mb-2">Upload Image (optional)</div>
+          <label className="w-full border p-2 rounded text-sm text-blue-500 upload" htmlFor="upload">Choose file</label>
+          <input
+            id="upload"
+            type="file"
+            accept="image/*"
+            className="w-full border p-2 rounded text-sm text-blue-500 hidden"
+            onChange={(e) => handleImageUpload(e)}
+          />
+        </div>
+        {formData.image && (
+          <div className="mt-2">
+            <img
+              src={formData.image}
+              alt="Mortalityed Fish"
+              className="w-32 h-32 object-cover border rounded"
+            />
+          </div>
+        )}
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -142,52 +185,48 @@ function MortalityLogPage () {
           Save
         </button>
       </form>
-
       <div>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500">Mortality History</h2>
-      {recentMortality.length === 0 ? (
-          <p className="text-gray-500">No mortality records yet.</p>
-      ) : (
+        <hr/>
+        <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Recent Mortality History</h2></div>
+        {recentMortalities.length === 0 ? (
+          <p className="text-gray-500 no-record">No mortality records yet.</p>
+        ) : (
           <ul className="space-y-2">
-          {recentMortality.map((entry, index) => (
+            {recentMortalities.map((entry, index) => (
               <li key={index} className="bg-blue-50 border p-3 text-gray-500 rounded shadow-sm">
-                <strong>{entry.pond}</strong> – {entry.cause}, {entry.count} fish<br />
-              <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
+                <strong>{entry.name}</strong> – {entry.count} fish, cause: {entry.cause}<br />
+                <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
               </li>
-          ))}
-        </ul>
-      )}
+            ))}
+          </ul>
+        )}
+      </div>
+      <hr/>
+      <div>
+        <div className="center-txt"><h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Mortality Trends</h2></div>
+        <div>
+          <select
+            name="pond"
+            value={formData.pond}
+            onChange={handleChange}
+            className="w-full border p-2 rounded text-sm text-blue-500 bg-white"
+          >
+            <option value="">-- Select Pond --</option>
+            {ponds && ponds.map((p) => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </select>
+          <MortalityChart mortalities={pond.mortalities}/>
+          <div className="mt-4">
+            <button
+              onClick={() => router.push('/logs/mortality/history')}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              View Full Mortality History
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-      <div>
-      <h2 className="text-xl font-semibold mb-4 text-gray-500">Mortality Trends</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
-      <div>
-      <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
-      <select
-    name="pond"
-    value={formData.pond}
-    onChange={handleChange}
-    className="w-full border p-2 rounded text-sm text-blue-500"
-      >
-      <option value="">-- Select Pond --</option>
-      <option value="Pond A">Pond A</option>
-      <option value="Pond B">Pond B</option>
-            <option value="Pond C">Pond C</option>
-      </select>
-      </div>
-      <div className="mt-4">
-        <button
-          onClick={() => router.push('/logs/mortality/history')}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          View Full Mortality History
-        </button>
-      </div>
-      </form>
-      <MortalityChart entries={filteredEntry}/>
-      </div>
-      </div>
   );
 }
-export default MortalityLogPage;

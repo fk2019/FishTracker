@@ -41,16 +41,21 @@ body {
     color: #E52B50;
 }
 .sidebar {
-    color: #1034A6;
+    color:  #d6f0f6;/* #005662;*/
     font-weight: 600;
     background:  url('../assets/fish_p.png');/*#1ca9c9;*/
     background-size: contain;
 }
 .side-link, .logout {
-    background:  #A4DDED;
+    background: #34495e;
+    text-align: center;
 }
 .side-link:hover, .logout:hover {
-    background: white;
+    background: #dcf2f7;
+    color:#34495e;
+}
+.logout:hover {
+    color: red;
 }
 flex {
     flex-direction: column;
@@ -81,19 +86,47 @@ flex {
 }
 .text-bg {
     display: inline-flex;
-    background: white;
+    color: #d6f0f6;
     opacity: 90%;
     border-radius: .5rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-top: 2rem;
+    padding: 1rem;
     margin-bottom: .1rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+
+}
+.dark-green {
+    background:#34495e;
+    color: white;
 }
 
+.list-inside > li {
+    text-align: left;
+}
+.center-txt, .center-txt-button {
+    display: flex;
+    margin-bottom: 1rem;
+}
+.center-txt {
+    background: #34495e;
+    border-radius: .5rem;
+}
+.center-txt-button {
+    gap: 1rem;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+.dashboard-txt {
+    text-align: center;
+}
 hr {
     border: none;
     border-top: .1rem solid white;
     margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 .content-form {
     background: white;
@@ -114,13 +147,62 @@ hr {
 }
 .farm-name>span{
     font-size: 2rem;
-    color: #000f89;
+    color: #d6f0f6;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
     font-weight: 800;
+}
+.chart {
+    border-radius: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    background:   #A4DDED;
+}
+.report {
+    margin-bottom: 2rem;
+    display: inline-flex;
+}
+.report > select {
+    text-align:center;
+}
+.ponds {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.ponds >h1{
+    margin-bottom: 2rem;
+}
+.cause {
+    width: 25%;
+}
+
+.entry, .date {
+    display: inline-block;
+}
+.mortality {
+    display: flex;
+    gap: .5rem;
+    align-items:center;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 @media screen and (max-width: 448px) {
     body {
 	background: url('../assets/fish_p.png');
         background-size: cover;
+    }
+    .mortality {
+	align-items: flex-start;
+	flex-direction: column;
+    }
+    .mortality-desc {
+	margin-left: 50%;
+	margin-right: 50%;
+    }
+    .sidebar > ul {
+	width: 75%;
+	margin-left: auto;
+	margin-right: auto;
     }
 }

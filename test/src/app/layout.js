@@ -93,7 +93,7 @@ export default function Layout({ children }) {
       </div>
       <main className="p-4">
       <div className="farm-name">
-      <span className="text-sm text-gray-700 font-semibold">{farmName}</span>
+      <span className="text-sm text-gray-700 font-semibold dark-green text-bg">{farmName}</span>
       </div>
       {children}
     </main>

@@ -1,5 +1,5 @@
 'use client';
-
+import imageCompression from 'browser-image-compression';
 import { useState, useEffect } from 'react';
 import HarvestingChart from '../../components/HarvestingChart';
 export default function HarvestingTrackerPage() {
@@ -10,29 +10,29 @@ export default function HarvestingTrackerPage() {
     averageWeight: '',
     totalWeight: '',
     count: '',
-    species: ''
   });
-  const [chartData, setChartData] = useState({
-    pond: ''
-  });
+  const [unit, setUnit] = useState('');
   const [ponds, setPonds] = useState([]);
   const [pond, setPond] = useState([]);
+  const [fishImage, setFishImage] = useState(null);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setUnit(user.weightUnit || 'kg');
+
+  },[]);
   useEffect(() => {
     const savedPonds = JSON.parse(localStorage.getItem('ponds'));
     setPonds(savedPonds);
   }, []);
   //select pond
   useEffect(() => {
-    const selectedPond = ponds.find(p=>p.name === formData.pond);
-    setPond(selectedPond || null);
-  }, [formData.pond, ponds]);
-  //chartdata
-  useEffect(() => {
-    const selectPond = ponds.find(p=>p.name === 'Pond 1');
-    setChartData(selectPond || null);
-  }, [chartData, ponds]);
-  
-  // Load from localStorage
+    if (ponds){
+      const selectedPond = ponds.find(p=>p.name === formData.pond);
+      setPond(selectedPond || null);
+    }
+  }, [formData.pond,ponds]);
+
   useEffect(() => {
     const saved = localStorage.getItem('harvestingData');
     if (saved) {
@@ -45,49 +45,89 @@ export default function HarvestingTrackerPage() {
     localStorage.setItem('harvestingData', JSON.stringify(entries));
   }, [entries]);
 
-  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  const updatedformData = {...formData, image:fishImage};
   const handleChartChange = (e) => {
     setChartData({ ...chartData, [e.target.name]: e.target.value });
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    const ponds = JSON.parse(localStorage.getItem('ponds')) || [];
+
+    const freshPond = ponds.find(p => p.name === pond.name) || pond;
     const newEntry = { ...formData };
     if (!newEntry.pond || !newEntry.date || !newEntry.averageWeight || !newEntry.count) return;
 
     setEntries([newEntry, ...entries]);
-    const prevHarvests = pond.harvests || [];
+    const prevHarvests = freshPond.harvests || [];
     const harvestNumber = prevHarvests.length + 1;
+    const count = Number(newEntry.count);
+    const prevCumulative = prevHarvests.length > 0 && prevHarvests[prevHarvests.length - 1].cumulative ? prevHarvests[prevHarvests.length - 1].cumulative : 0;
+    const cumulativeCount = prevCumulative + count;
     const newHarvest = {
       harvestNumber: harvestNumber,
       date: newEntry.date,
       averageWeight: newEntry.averageWeight,
-      count: newEntry.count
+      count: count,
+      cumulative: cumulativeCount,
+      image: fishImage,
     }
-
+    const updatedFormData = {
+      name: formData.pond,
+      ...newHarvest
+    }
+    setEntries([updatedFormData, ...entries]);
     const updatedPond = {
-      ...pond,
-      harvests: newHarvest
+      ...freshPond,
+      harvests: [...prevHarvests, newHarvest]
     }
     const updatedPonds = ponds.map(p => p.name === pond.name ? updatedPond : p);
     localStorage.setItem('ponds', JSON.stringify(updatedPonds));
-    {/* setFormData({
-      pond: '',
-      date: '',
-      averageWeight: '',
-      totalWeight: '',
-      count: '',
-      species: ''
-      });*/}
+  };
+  //history
+  const groupByPond = entries.reduce((acc, entry) => {
+    if (!acc[entry.pond]) {
+      acc[entry.pond] = entry;
+    } else {
+      // Compare the dates to select the most recent entry for the pond
+      const existingDate = new Date(acc[entry.pond].date);
+      const newDate = new Date(entry.date);
+      if (newDate > existingDate) {
+        acc[entry.pond] = entry;
+      }
+    }
+    return acc;
+  }, {});
+  const recentHarvests = Object.values(groupByPond);
+  //chart
+  useEffect(() => {
+    const savedPonds = JSON.parse(localStorage.getItem('ponds')) || [];
+    const freshPond = savedPonds.find(p => p.name === formData.pond) || pond;
+    setPond(freshPond);
+  }, [formData.pond]);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const options = {
+      maxSizeMB: 0.2,        // Target max size ~200KB
+      maxWidthOrHeight: 800, // Resize if too large
+      useWebWorker: true,
+    };
+    try {
+    const compressedFile = await imageCompression(file, options);
+    const base64 = await imageCompression.getDataUrlFromFile(compressedFile);
+    setFishImage(base64);
+  } catch (error) {
+    console.error('Image compression failed:', error);
+  }
   };
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold text-blue-900">Harvesting Tracker</h1>
-      <h1>Pond: {chartData ? 'true' : 'false'}</h1>
+      <h1 className="text-2xl font-semibold text-blue-900 text-bg">Harvest Tracker</h1>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-6">
         <div>
           <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
@@ -98,7 +138,7 @@ export default function HarvestingTrackerPage() {
             className="w-full border p-2 rounded text-sm text-blue-500"
           >
       <option value="">-- Select Pond --</option>
-      {ponds.map((p) => (
+      {ponds && ponds.map((p) => (
           <option key={p.name} value={p.name}>{p.name}</option>
       ))}
           </select>
@@ -111,45 +151,61 @@ export default function HarvestingTrackerPage() {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full border p-2 rounded text-sm text-blue-500"
+    className="w-full border p-2 rounded text-sm text-blue-500"
           />
         </div>
 
       <div>
-          <label className="text-lg font-semibold text-blue-800 mb-2">Average Weight (kg)</label>
+      <label className="text-lg font-semibold text-blue-800 mb-2">Average Weight ({unit})</label>
           <input
             type="number"
             name="averageWeight"
             value={formData.averageWeight}
             onChange={handleChange}
             className="w-full border p-2 rounded text-sm text-blue-500"
-            placeholder="45"
           />
       </div>
       <div>
-          <label className="text-lg font-semibold text-blue-800 mb-2">Total Weight (kg)</label>
+      <label className="text-lg font-semibold text-blue-800 mb-2">Total Weight ({unit})</label>
           <input
             type="number"
             name="totalWeight"
             value={formData.totalWeight}
             onChange={handleChange}
             className="w-full border p-2 rounded text-sm text-blue-500"
-            placeholder="45"
           />
         </div>
 
         <div>
-          <label className="text-lg font-semibold text-blue-800 mb-2">Number of Fish Counted</label>
+          <label className="text-lg font-semibold text-blue-800 mb-2">Number of Fish Harvested</label>
           <input
             type="number"
             name="count"
             value={formData.count}
             onChange={handleChange}
             className="w-full border p-2 rounded text-sm text-blue-500"
-            placeholder="120"
           />
         </div>
-
+      <div>
+      <div className="text-lg font-semibold text-blue-800 mb-2">Upload Image (optional)</div>
+      <label className="w-full border p-2 rounded text-sm text-blue-500 upload" htmlFor="upload">Choose file</label>
+      <input
+    id="upload"
+    type="file"
+    accept="image/*"
+    className="w-full border p-2 rounded text-sm text-blue-500 hidden"
+    onChange={(e) => handleImageUpload(e)}
+      />
+      </div>
+      {updatedformData.image && (
+        <div className="mt-2">
+        <img
+      src={updatedformData.image}
+      alt="Harvested Fish"
+      className="w-32 h-32 object-cover border rounded"
+        />
+        </div>
+    )}
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -159,38 +215,38 @@ export default function HarvestingTrackerPage() {
       </form>
 
       <div>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500">Harvesting History</h2>
-      {entries.length === 0 ? (
-          <p className="text-gray-500">No harvesting records yet.</p>
+      <hr/>
+      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Harvest History</h2>
+      {recentHarvests.length === 0 ? (
+          <p className="text-gray-500 no-record">No harvesting records yet.</p>
       ) : (
           <ul className="space-y-2">
-          {entries.map((entry, index) => (
+          {recentHarvests.map((entry, index) => (
               <li key={index} className="bg-blue-50 border p-3 text-gray-500 rounded shadow-sm">
-                <strong>{entry.pond}</strong> – {entry.totalWeight}kg, {entry.count} fish<br />
+              <strong>{entry.name}</strong> – {entry.totalWeight} {unit}, {entry.count} fish<br />
               <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
               </li>
           ))}
         </ul>
       )}
     </div>
+      <hr/>
       <div>
-      <h2 className="text-xl font-semibold mb-2 text-gray-500">Harvest Trends</h2>
+      <h2 className="text-xl font-semibold mb-2 text-gray-500 text-bg">Harvest Trends</h2>
       <div>
-      <label className="text-lg font-semibold text-blue-800 mb-2">Pond</label>
       <select
     name="pond"
-    value={chartData.pond}
-    onChange={handleChartChange}
-            className="w-full border p-2 rounded text-sm text-blue-500"
+    value={formData.pond}
+    onChange={handleChange}
+            className="w-full border p-2 rounded text-sm text-blue-500 bg-white"
       >
       <option value="">-- Select Pond --</option>
-      {ponds.map((p) => (
+      {ponds && ponds.map((p) => (
           <option key={p.name} value={p.name}>{p.name}</option>
       ))}
     </select>
       </div>
-      <h1>selected: { chartData? 'true' : 'false'}</h1>
-      {pond && <HarvestingChart entries={pond.harvests} />}
+     {pond && <HarvestingChart harvests={pond.harvests} />}
     </div>
       </div>
   );

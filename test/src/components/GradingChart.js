@@ -4,13 +4,13 @@ import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 export default function GradingLineChart({ gradings }) {
-  if (!Array.isArray(gradings)) return <p>No grading data</p>;
+  if (!Array.isArray(gradings)) return <p className="no-record">No grading data</p>;
 
   const data = {
-    labels: gradings.map(h => `#${h.gradingNumber}`),
+    labels: gradings.map(h => `${h.date}`),
     datasets: [
       {
-        label: 'Count',
+        label: 'Stock',
         data: gradings.map(h => h.count),
         fill: false,
         borderColor: 'rgb(255, 99, 132)',
@@ -34,8 +34,8 @@ export default function GradingLineChart({ gradings }) {
   };
 
   return (
-    <div className="mt-10 bg-white">
-      <h2 className="text-xl font-semibold text-blue-900 mb-4">Grading History</h2>
+    <div className="mt-10 bg-white chart">
+      <h2 className="text-xl font-semibold text-blue-900 mb-4">Grading Trend</h2>
       <Line data={data} options={options} />
     </div>
   );
